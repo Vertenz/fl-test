@@ -1,5 +1,6 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -33,7 +34,9 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  // favorites
   List<WordPair> favorites = <WordPair>[];
+
   void toggleFavorites() {
     if (favorites.contains(current)) {
       favorites.remove(current);
@@ -50,6 +53,14 @@ class MyHomePage extends StatelessWidget {
     final MyAppState appState = context.watch<MyAppState>();
     final WordPair pair = appState.current;
 
+    // icon
+    IconData icon;
+    if (appState.favorites.contains(pair)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
+
     return Scaffold(
       body: Center(
         child: Column(
@@ -58,17 +69,31 @@ class MyHomePage extends StatelessWidget {
             TitleWidget(),
             SizedBox(height: 15),
             BigCard(pair: pair),
-        
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <ElevatedButton>[
-                ElevatedButton(
-                  onPressed: () {
-                    appState.getNext();
-                  }, 
-                  child: Text('Next')),
+
+            Column(
+              children: <Widget>[
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        appState.toggleFavorites();
+                      },
+                      icon: Icon(icon), 
+                      label: Text('Like'),
+                      ),
+
+                    SizedBox(width: 10),
+
+                      ElevatedButton(
+                        onPressed: () {
+                          appState.getNext();
+                        }, 
+                        child: Text('Next')),
               ],
-            )
+                ),
+              ],
+            ),
           ],
         ),
       ),
